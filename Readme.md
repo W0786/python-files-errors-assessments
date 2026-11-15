@@ -597,7 +597,7 @@ Possible improvements include:
 
 <br><br>
 
-**Ali Abbas**
+**WAQAR FARID**
 
 Software Engineering Graduate | Python Learner
 
