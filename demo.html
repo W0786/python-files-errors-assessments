@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python Management Suite – Interactive Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐍%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--acc:#2563eb;--soft:#eff6ff;--ok:#16a34a;--bad:#dc2626;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#111a2e;--ink:#e2e8f0;--mut:#94a3b8;--line:#22304d;--acc:#60a5fa;--soft:#16233f;--ok:#4ade80;--bad:#f87171;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{background:linear-gradient(135deg,#0f172a,#1d4ed8 55%,#06b6d4);color:#fff;text-align:center;padding:44px 16px 36px}
+h1{margin:0;font-size:clamp(26px,5vw,40px)}header p{margin:6px 0}
+#typ{font:600 17px Consolas,"Courier New",monospace;color:#7dd3fc;min-height:26px}#typ::after{content:"▌";animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.badges span{padding:5px 14px;border-radius:6px;font:700 12px sans-serif;color:#fff}
+main{max-width:1040px;margin:0 auto;padding:20px 14px 40px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{flex:1;min-width:150px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:600 15px inherit;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 6px 20px rgba(15,23,42,.06)}
+h2{margin:0 0 4px;font-size:20px}h3{margin:0 0 8px;font-size:14px;color:var(--mut);letter-spacing:.05em;text-transform:uppercase}.sub{color:var(--mut);margin:0 0 14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.g2{grid-template-columns:1fr}}
+.term,.csv{background:#060b16;color:#cbd5e1;font:13px/1.55 Consolas,"Courier New",monospace;padding:12px;border-radius:12px;white-space:pre-wrap;overflow:auto;word-break:break-word}
+.term{height:300px}.csv{min-height:90px;max-height:200px;color:#fcd34d}
+.term .ok{color:#4ade80}.term .bad{color:#f87171}.term .warn{color:#fbbf24}.term .cmd{color:#38bdf8}
+button.b{padding:8px 14px;border:0;border-radius:9px;background:var(--acc);color:#fff;font:600 14px inherit;cursor:pointer}
+button.b.o{background:var(--soft);color:var(--acc);border:1px solid var(--line)}button.b:hover{filter:brightness(1.1)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+input,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{font:13px/1.5 Consolas,monospace;min-height:170px}label{font-size:12px;color:var(--mut);font-weight:600}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}form .full{grid-column:1/-1}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px}@media(max-width:760px){.pipe{grid-template-columns:repeat(2,1fr)}}
+.col{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px;min-height:60px}.col b{display:block;font-size:12px;margin-bottom:6px}
+.chip{display:block;margin:3px 0;padding:2px 8px;border-radius:6px;background:var(--card);border:1px solid var(--line);font:12px Consolas,monospace;white-space:pre;overflow:hidden;animation:up .4s both;animation-delay:calc(var(--i)*70ms)}
+@keyframes up{from{opacity:0;transform:translateY(8px)}}
+.met{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.m{text-align:center;border-radius:12px;padding:10px;background:var(--soft);border:1px solid var(--line)}.m b{display:block;font-size:26px;color:var(--acc)}.m span{font-size:12px;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}th{background:var(--soft)}
+.tw{overflow-x:auto}.pass{color:var(--ok);font-weight:700}.fail{color:var(--bad);font-weight:700}
+footer{text-align:center;color:var(--mut);font-size:13px;padding:0 14px 30px}footer a{color:var(--acc)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Python Management Suite</h1>
+  <p>Personal Finance and Student Attendance Management</p>
+  <div id="typ"></div>
+  <div class="badges"><span style="background:#3776ab">Python 3.x</span><span style="background:#34a853">CSV Data Handling</span><span style="background:#22c55e">Project Completed</span><span style="background:#8b5cf6">Bootcamp Assessment 04</span></div>
+</header>
+<main>
+  <div class="card" style="border-left:5px solid #f59e0b"><b>Browser simulation.</b> This page is a JavaScript demo of the two Python programs. The real applications run in Python (<code>py expense_tracker.py</code>, <code>py attendance_cleaner.py</code>). Expense data is kept in your browser to mimic <code>expenses.csv</code>.</div>
+  <div class="tabs">
+    <button class="on" data-p="p1">💰 Expense Tracker</button>
+    <button data-p="p2">🎓 Attendance Cleaner</button>
+    <button data-p="p3">🧪 Test Cases</button>
+  </div>
+
+  <section id="p1">
+    <div class="card">
+      <h2>Institute Expense Tracker</h2><p class="sub">expense_tracker.py · date, item, category, amount → expenses.csv</p>
+      <div class="row">
+        <button class="b" data-o="1">1 · Add New Expense</button><button class="b" data-o="2">2 · Show All Expenses</button>
+        <button class="b" data-o="3">3 · Total by Category</button><button class="b" data-o="4">4 · Exit</button>
+      </div>
+      <div class="row"><input id="opt" placeholder="Or type any option, e.g. 9 (invalid choice)" style="flex:1;min-width:200px"><button class="b o" id="go">Submit option</button></div>
+      <form id="form" hidden>
+        <div><label>Date (DD-MM-YYYY)</label><input name="d" required></div>
+        <div><label>Amount</label><input name="a" placeholder="try: abc"></div>
+        <div><label>Item name</label><input name="i" placeholder="Stationery"></div>
+        <div><label>Category</label><input name="c" placeholder="Supplies"></div>
+        <div class="full"><button class="b" type="submit">Save expense</button></div>
+      </form>
+    </div>
+    <div class="g2">
+      <div class="card"><h3>Terminal</h3><div class="term" id="t1"></div>
+        <div class="row"><button class="b o" id="restart">↻ Restart program (reload CSV)</button><button class="b o" id="sample">+ Sample data</button><button class="b o" id="del">🗑 Delete expenses.csv</button></div></div>
+      <div class="card"><h3>expenses.csv</h3><div class="csv" id="csv1"></div>
+        <p class="sub" style="margin-top:12px">Add expenses, press <b>Restart</b>: they load again. Delete the file, restart: <code>FileNotFoundError</code> is handled.</p></div>
+    </div>
+  </section>
+
+  <section id="p2" hidden>
+    <div class="card">
+      <h2>Student Attendance Cleaner</h2><p class="sub">attendance_cleaner.py · strip() + title() in a list comprehension → set() → sorted() → attendance_clean.csv</p>
+      <label>attendance.txt (one name per line)</label><textarea id="raw"></textarea>
+      <div class="row"><button class="b" id="clean">▶ Run cleaner</button><button class="b o" id="load">Load README sample</button><button class="b o" id="miss">Missing file</button><button class="b o" id="empty">Empty file</button></div>
+      <div class="met"><div class="m"><b id="m1">–</b><span>Original Records</span></div><div class="m"><b id="m2">–</b><span>Unique Students</span></div><div class="m"><b id="m3">–</b><span>Duplicate Records</span></div></div>
+      <div class="pipe" id="pipe"></div>
+    </div>
+    <div class="g2">
+      <div class="card"><h3>Terminal</h3><div class="term" id="t2" style="height:260px"></div></div>
+      <div class="card"><h3>attendance_clean.csv</h3><div class="csv" id="csv2">(not created yet)</div></div>
+    </div>
+  </section>
+
+  <section id="p3" hidden>
+    <div class="card">
+      <h2>Test Cases</h2><p class="sub">The README scenarios, executed live against the same logic used above.</p>
+      <div class="row"><button class="b" id="runT">▶ Run all tests</button><b id="sum" style="align-self:center"></b></div>
+      <div class="tw"><table><thead><tr><th>ID</th><th>Scenario</th><th>Expected result</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+    </div>
+  </section>
+</main>
+<footer>Developed by <b>Ali Abbas</b> · <a href="https://github.com/aliabbas0014">GitHub</a> · <a href="https://aliabbas0014.github.io/Portfolio">Portfolio</a><br>Built with Python. Focused on Learning. Inspired by Real-World Problems.</footer>
+
+<script>
+//CORE-START
+const dateOk=s=>{const m=/^(\d{2})-(\d{2})-(\d{4})$/.exec(s.trim());if(!m)return false;const d=+m[1],mo=+m[2],y=+m[3],t=new Date(y,mo-1,d);return t.getFullYear()===y&&t.getMonth()===mo-1&&t.getDate()===d};
+const amountCheck=s=>{s=s.trim();const n=Number(s);if(s===""||!isFinite(n))return{ok:false,msg:"Invalid amount. Please enter a number (e.g. 1500 or 99.5)."};if(n<0)return{ok:false,msg:"Amount cannot be negative."};return{ok:true,n}};
+const title=s=>s.toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
+const cleanNames=L=>L.filter(l=>l.trim()).map(l=>title(l.trim()));
+const uniqSorted=c=>[...new Set(c)].sort();
+const totals=E=>{const m=new Map();E.forEach(e=>m.set(e.category,(m.get(e.category)||0)+e.amount));return m};
+const menuMsg=o=>o==="4"?"Goodbye! Program terminated.":/^[123]$/.test(o)?"":"Invalid choice. Please enter 1, 2, 3 or 4.";
+const csvOut=L=>["Student Name",...L].join("\n");
+const csvExp=E=>["date,item,category,amount",...E.map(e=>[e.date,e.item,e.category,e.amount].join(","))].join("\n");
+const loadExp=f=>f===null?{list:[],msg:"expenses.csv not found. Starting with an empty expense list."}:{list:f,msg:`Loaded ${f.length} expense(s) from expenses.csv.`};
+const loadAtt=t=>t===null?{err:"Error: attendance.txt not found. Keep it in the project folder."}:{lines:t.split("\n")};
+//CORE-END
+
+const $=s=>document.querySelector(s),K="pms_expenses";
+const log=(t,m,c)=>{const d=document.createElement("div");d.className=c||"";d.textContent=m;t.appendChild(d);t.scrollTop=t.scrollHeight};
+
+/* ---------- tabs + typing ---------- */
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["p1","p2","p3"].forEach(p=>$("#"+p).hidden=p!==b.dataset.p)});
+const P=["Python File Handling Project","Smart Expense Tracking System","Student Attendance Data Cleaner","Built with Core Python Concepts"];let pi=0,ci=0,dl=false;
+(function ty(){const w=P[pi];ci+=dl?-1:1;$("#typ").textContent=w.slice(0,ci);let t=dl?35:70;if(!dl&&ci===w.length){dl=true;t=1400}else if(dl&&ci===0){dl=false;pi=(pi+1)%P.length;t=300}setTimeout(ty,t)})();
+
+/* ---------- Expense Tracker ---------- */
+let mem=null,ex=[];
+const rd=()=>{try{const v=localStorage.getItem(K);return v===null?null:JSON.parse(v)}catch(e){return mem}};
+const wr=a=>{mem=a;try{localStorage.setItem(K,JSON.stringify(a))}catch(e){}};
+const L1=(m,c)=>log($("#t1"),m,c);
+const csvView=()=>{const f=rd();$("#csv1").textContent=f===null?"(expenses.csv does not exist yet)":csvExp(f)};
+function boot(){const f=rd(),r=loadExp(f);ex=r.list;L1(r.msg,f===null?"warn":"ok");csvView()}
+function menu(o){o=o.trim();L1("Choose an option (1-4): "+o,"cmd");$("#form").hidden=o!=="1";
+  if(o==="1"){$("#form").elements.d.value=new Date().toLocaleDateString("en-GB").replace(/\//g,"-");return L1("Enter the expense details in the form below.")}
+  if(o==="2"||o==="3"){if(!ex.length)return L1("No expenses recorded yet.","warn");
+    if(o==="3")return L1("----- EXPENSES BY CATEGORY -----\n\n"+[...totals(ex)].map(([c,v])=>`${c} : ${v.toFixed(1)}`).join("\n"));
+    L1(["Date".padEnd(12)+"Item".padEnd(14)+"Category".padEnd(12)+"Amount".padStart(8),"-".repeat(46),...ex.map(e=>e.date.padEnd(12)+e.item.padEnd(14)+e.category.padEnd(12)+e.amount.toFixed(2).padStart(8))].join("\n"));
+    return L1("Unique categories (set): "+[...new Set(ex.map(e=>e.category))].sort().join(", "),"ok")}
+  L1(menuMsg(o),o==="4"?"ok":"bad")}
+document.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>menu(b.dataset.o));
+$("#go").onclick=()=>{menu($("#opt").value);$("#opt").value=""};
+$("#opt").onkeydown=e=>{if(e.key==="Enter")$("#go").click()};
+$("#form").onsubmit=e=>{e.preventDefault();const f=e.target.elements,i=f.i.value.trim(),c=f.c.value.trim(),a=amountCheck(f.a.value);
+  if(!dateOk(f.d.value))return L1("Invalid date. Use the format DD-MM-YYYY (e.g. 13-11-2026).","bad");
+  if(!i||!c)return L1("Item and category cannot be empty.","bad");
+  if(!a.ok)return L1(a.msg,"bad");
+  ex.push({date:f.d.value.trim(),item:i,category:c,amount:a.n});wr(ex);L1("Expense saved successfully!","ok");csvView();f.i.value=f.c.value=f.a.value=""};
+$("#restart").onclick=()=>{L1("\n--- Program restarted ---","cmd");boot()};
+$("#sample").onclick=()=>{ex=[...ex,{date:"13-11-2026",item:"Stationery",category:"Supplies",amount:2500},{date:"13-11-2026",item:"Electricity",category:"Utilities",amount:5000},{date:"14-11-2026",item:"Bus Fare",category:"Transport",amount:1500}];wr(ex);L1("Sample expenses added and saved.","ok");csvView()};
+$("#del").onclick=()=>{mem=null;try{localStorage.removeItem(K)}catch(e){}L1("expenses.csv deleted (simulated). Press Restart to see FileNotFoundError handled.","warn");csvView()};
+boot();L1('Tip: press "1 · Add New Expense", or type "abc" as the amount to see ValueError handling.');
+
+/* ---------- Attendance Cleaner ---------- */
+const SAMPLE="ali\nAhmed\n  sara\nALI\nahmed\nusman\nSara\n  usman";
+const L2=(m,c)=>log($("#t2"),m,c);
+function chips(arr,q){const c=document.createElement("div");c.className="col";const h=document.createElement("b");h.textContent=q;c.appendChild(h);arr.forEach((v,i)=>{const s=document.createElement("span");s.className="chip";s.style.setProperty("--i",i);s.textContent=v;c.appendChild(s)});return c}
+function runAtt(text){$("#t2").textContent="";$("#pipe").textContent="";L2("$ py attendance_cleaner.py","cmd");
+  const r=loadAtt(text);
+  if(r.err){L2(r.err,"bad");["m1","m2","m3"].forEach(m=>$("#"+m).textContent="–");$("#csv2").textContent="(attendance_clean.csv not created)";return}
+  const raw=r.lines.filter(l=>l.trim()),st=raw.map(l=>l.trim()),ti=st.map(title),un=[...new Set(ti)],so=uniqSorted(ti);
+  [["1. Raw lines",raw.map(v=>JSON.stringify(v))],["2. strip()",st],["3. title()",ti],["4. set()",un],["5. sorted()",so]].forEach(([q,a])=>$("#pipe").appendChild(chips(a,q)));
+  $("#m1").textContent=ti.length;$("#m2").textContent=so.length;$("#m3").textContent=ti.length-so.length;
+  L2("===== STUDENT ATTENDANCE REPORT =====\n\nOriginal Records: "+ti.length+"\nUnique Students: "+so.length+"\n\n----- CLEANED ATTENDANCE LIST -----\n\n"+so.join("\n"));
+  L2("\nCleaned attendance saved successfully!","ok");$("#csv2").textContent=csvOut(so)}
+$("#raw").value=SAMPLE;
+$("#clean").onclick=()=>runAtt($("#raw").value);
+$("#load").onclick=()=>{$("#raw").value=SAMPLE;runAtt(SAMPLE)};
+$("#miss").onclick=()=>runAtt(null);
+$("#empty").onclick=()=>{$("#raw").value="";runAtt("")};
+runAtt(SAMPLE);
+
+/* ---------- Test Cases ---------- */
+const S8=SAMPLE.split("\n");
+const TT=[
+["ET-01","Start without an existing CSV file","Start with an empty expense list",()=>loadExp(null).list.length===0],
+["ET-02","Add a valid expense","Save the expense successfully",()=>dateOk("13-11-2026")&&amountCheck("2500").ok],
+["ET-03","Enter an invalid amount","Display an error and request the amount again",()=>!amountCheck("abc").ok],
+["ET-04","Enter an invalid date","Display an error and request the date again",()=>!dateOk("31-02-2026")&&!dateOk("2026/11/13")],
+["ET-05","Display expenses when records exist","Show all saved expenses",()=>csvExp([{date:"13-11-2026",item:"Pen",category:"Supplies",amount:20}]).split("\n").length===2],
+["ET-06","Calculate category totals","Display correct category-wise totals",()=>totals([{category:"A",amount:2000},{category:"A",amount:500},{category:"B",amount:5000}]).get("A")===2500],
+["ET-07","Select an invalid menu option","Display an invalid choice message",()=>menuMsg("9").startsWith("Invalid")],
+["ET-08","Exit the application","Display exit message and terminate",()=>menuMsg("4").startsWith("Goodbye")],
+["AC-01","Read a valid attendance file","Successfully load student names",()=>cleanNames(loadAtt(S8.join("\n")).lines).length===8],
+["AC-02","Names contain extra spaces","Remove unnecessary spaces",()=>cleanNames(["  sara  "])[0]==="Sara"],
+["AC-03","Names contain different letter cases","Standardize names",()=>cleanNames(["ALI","ali","aLi"]).every(n=>n==="Ali")],
+["AC-04","Duplicate names exist","Keep only unique names",()=>uniqSorted(cleanNames(S8)).length===4],
+["AC-05","Names are not alphabetically sorted","Sort them alphabetically",()=>uniqSorted(cleanNames(S8)).join()==="Ahmed,Ali,Sara,Usman"],
+["AC-06","Attendance file is missing","Display an error message",()=>!!loadAtt(null).err],
+["AC-07","Attendance file is empty","Generate an empty cleaned list",()=>cleanNames(loadAtt("").lines).length===0],
+["AC-08","Save cleaned records","Generate attendance_clean.csv",()=>csvOut(uniqSorted(cleanNames(S8))).startsWith("Student Name\nAhmed")]];
+TT.forEach(t=>{const tr=document.createElement("tr");[t[0],t[1],t[2],"Not run"].forEach(x=>{const td=document.createElement("td");td.textContent=x;tr.appendChild(td)});t.cell=tr.lastChild;$("#tb").appendChild(tr)});
+$("#runT").onclick=async()=>{let ok=0;$("#sum").textContent="";
+  for(const t of TT){await new Promise(r=>setTimeout(r,110));let p=false;try{p=!!t[3]()}catch(e){}
+    t.cell.textContent=p?"✔ Pass":"✖ Fail";t.cell.className=p?"pass":"fail";if(p)ok++}
+  $("#sum").textContent=ok+"/"+TT.length+" tests passed"};
+</script>
+</body>
+</html>
