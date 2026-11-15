@@ -593,13 +593,13 @@ Possible improvements include:
 
 <div align="center">
 
-<img src="https://img.shields.io/badge/Developed%20By-Ali%20Abbas-2563EB?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Developed%20By-Waqar%20Farid-2563EB?style=for-the-badge" />
 
 <br><br>
 
 **WAQAR FARID**
 
-Software Engineering Graduate | Python Learner
+Web Engineering Trainer | Python Learner
 
 [![GitHub](https://img.shields.io/badge/GitHub-aliabbas0014-181717?style=flat&logo=github)](https://github.com/aliabbas0014)
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-0EA5E9?style=flat&logo=googlechrome&logoColor=white)](https://aliabbas0014.github.io/Portfolio)
