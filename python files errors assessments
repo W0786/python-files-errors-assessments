@@ -1,0 +1,511 @@
+<p align="center">
+  <img src="images/banner.svg" alt="Python Files & Errors Assessment banner" width="100%">
+</p>
+
+# Python Files & Errors Assessment
+
+Two small management tools for a training institute, built with Python's **file handling**, **exception handling**, **sets** and **list comprehensions**. Only the standard library is used (Python 3.8+).
+
+---
+
+## 1. Overview
+
+| Program | Purpose |
+|---------|---------|
+| `expense_tracker.py` | **Expense Tracking System.** Records daily operational expenses (stationery, internet bills, refreshments, transport) in `expenses.csv`, shows them, and totals them by category. |
+| `attendance_cleaner.py` | **Attendance Management System.** Cleans the messy `attendance.txt` (repeated names, wrong capitalisation, extra spaces), removes duplicates and generates a clean, sorted `attendance_clean.csv`. |
+
+## 2. Project structure
+
+```
+python-files-errors-assessment/
+├── expense_tracker.py
+├── attendance_cleaner.py
+├── attendance.txt
+├── README.md
+└── images/            <- SVG diagrams used in this README only
+```
+
+`expenses.csv` and `attendance_clean.csv` are created automatically when the programs run.
+
+![Project structure and data flow](images/structure.svg)
+
+---
+
+## 3. Requirements checklist
+
+### Task 1: `expense_tracker.py`
+
+| # | Requirement | Status | Where in code |
+|---|-------------|:------:|---------------|
+| 1 | **Save expenses in `expenses.csv` with columns `date,item,category,amount`** | ✅ | `FIELDS` (line 9), `save_expenses()` |
+| 2 | **Load saved expenses on start; catch `FileNotFoundError` and start with an empty list** | ✅ | `load_expenses()`, `except FileNotFoundError` (line 25) |
+| 3 | **Menu: 1. Add New Expense, 2. Show All Expenses, 3. Calculate Total Expenses by Category, 4. Exit** | ✅ | `main()` (lines 119-122) |
+| 4 | **User enters date, item name, category and amount** | ✅ | `add_expense()` |
+| 5 | **Catch `ValueError` for an invalid amount and ask again** | ✅ | `ask_amount()`, `except ValueError` (line 65) |
+| 6 | **Use a `set` to display all unique categories** | ✅ | `show_all()` (line 97), `total_by_category()` (line 105) |
+| 7 | **New expenses are saved to the CSV so they remain after restart** | ✅ | `save_expenses()` is called inside `add_expense()` |
+
+### Task 2: `attendance_cleaner.py`
+
+| # | Requirement | Status | Where in code |
+|---|-------------|:------:|---------------|
+| 1 | **Read names from `attendance.txt` (one name per line)** | ✅ | `open(INPUT_FILE)` (line 15) |
+| 2 | **Clean names with `strip()` and `title()` using a list comprehension** | ✅ | line 21 |
+| 3 | **Use a `set` to find unique students and count them** | ✅ | `set(cleaned)` (line 23) |
+| 4 | **Sort the cleaned names alphabetically** | ✅ | `sorted(...)` (line 24) |
+| 5 | **Save the cleaned, sorted list to `attendance_clean.csv`** | ✅ | `csv.writer` block |
+| 6 | **Display original record count, unique student count and cleaned list** | ✅ | final `print` statements |
+
+### Repository / README
+
+| Requirement | Status |
+|-------------|:------:|
+| **Public GitHub repo named `python-files-errors-assessment` with the 4 files above** | ✅ |
+| **README: overview of both apps** | ✅ Section 1 |
+| **README: how to run each program** | ✅ Section 4 |
+| **README: errors handled and why** | ✅ Section 5 |
+| **README: how sets and list comprehensions are used** | ✅ Section 6 |
+| **README: sample run showing data saved and loaded again** | ✅ Section 7 |
+| **Test cases** | ✅ Section 8 |
+| **SVG banner, structure diagram and flowcharts** | ✅ Sections 2, 4 and 6 |
+
+---
+
+## 4. How to run
+
+Open a terminal in the project folder, then:
+
+```
+python expense_tracker.py
+python attendance_cleaner.py
+```
+
+(Use `python3` on Mac/Linux or `py` on Windows if `python` is not recognised.)
+
+### Expense Tracker menu
+1. **Add New Expense**: enter date (`YYYY-MM-DD`, or press Enter for today), item, category and amount
+2. **Show All Expenses**: table of all records plus the unique categories
+3. **Calculate Total Expenses by Category**
+4. **Exit**
+
+Every new expense is written to `expenses.csv` immediately, and the file is loaded again the next time the program starts.
+
+#### Expense Tracker flowchart
+
+![Expense tracker flowchart](images/expense_flowchart.svg)
+
+### Attendance Cleaner
+Reads `attendance.txt`, cleans it, prints the **original number of records**, the **unique student count** and the **cleaned list**, and saves the sorted unique names to `attendance_clean.csv`. No input is needed.
+
+#### Attendance Cleaner flowchart
+
+![Attendance cleaner flowchart](images/attendance_flowchart.svg)
+
+---
+
+## 5. Errors handled and why
+
+| Error | Where | Why it is handled |
+|-------|-------|-------------------|
+| **`FileNotFoundError`** | Expense tracker, at start-up | On the first run `expenses.csv` does not exist yet. The program starts with an empty list instead of crashing. |
+| **`ValueError` (amount)** | Expense tracker, amount input | `float("abc")` fails. The user is told what went wrong and is asked again until a valid number is entered. |
+| `ValueError` (date) | Expense tracker, date input | A wrong date such as `2026-13-45` is rejected and the user is asked again, so only valid dates are stored. |
+| `ValueError` / `TypeError` / `KeyError` | Expense tracker, loading rows | A damaged row in the CSV is skipped so the rest of the data still loads. |
+| `FileNotFoundError` | Attendance cleaner | If `attendance.txt` is missing, a clear message is shown instead of a traceback. |
+
+Extra input checks: negative amounts, empty item/category and invalid menu choices are rejected with a message.
+
+---
+
+## 6. How sets and list comprehensions are used
+
+![Cleaning pipeline: list comprehension, set, sorted](images/sets_and_comprehension.svg)
+
+### Sets (store only unique values)
+- `expense_tracker.py`: `{e["category"] for e in expenses}` gives **each category once**, even if it was used many times. It is used to display the unique categories and to calculate totals.
+- `attendance_cleaner.py`: `set(cleaned)` **removes repeated student names**, and `len()` of the set is the unique student count.
+
+### List comprehension (cleans every line in one expression)
+```python
+cleaned = [line.strip().title() for line in lines if line.strip()]
+```
+- `strip()` removes extra spaces
+- `title()` fixes capitalisation (`"  ali RAZA "` becomes `"Ali Raza"`)
+- `if line.strip()` skips blank lines
+
+The cleaned list is turned into a set and passed to `sorted()` to get the final alphabetical list.
+
+---
+
+## 7. Sample run: data saved and loaded again
+
+**Run 1** (no `expenses.csv` yet)
+```
+expenses.csv not found. Starting with an empty expense list.
+Choose an option (1-4): 1
+Date (YYYY-MM-DD, Enter for today): 2026-11-10
+Item name: A4 Paper
+Category: stationery
+Amount: abc
+Invalid amount. Please enter a number (e.g. 1500 or 99.5).
+Amount: 1850
+Expense saved.
+Choose an option (1-4): 1
+Date (YYYY-MM-DD, Enter for today): 2026-13-45
+Invalid date. Use the format YYYY-MM-DD (e.g. 2026-11-14).
+Date (YYYY-MM-DD, Enter for today): 2026-11-11
+Item name: WiFi Bill
+Category: internet
+Amount: 4500.50
+Expense saved.
+... (two more expenses added) ...
+Choose an option (1-4): 3
+
+Total expenses by category:
+  Internet           4500.50
+  Refreshments        700.00
+  Stationery         2800.00
+  GRAND TOTAL        8000.50
+Choose an option (1-4): 4
+Goodbye!
+```
+
+`expenses.csv` after Run 1:
+```
+date,item,category,amount
+2026-11-10,A4 Paper,Stationery,1850.0
+2026-11-11,WiFi Bill,Internet,4500.5
+2026-11-14,Tea & Biscuits,Refreshments,700.0
+2026-11-12,Paper Ream,Stationery,950.0
+```
+
+**Run 2** (program restarted, data loaded again)
+```
+Loaded 4 expense(s) from expenses.csv.
+Choose an option (1-4): 2
+
+Date        Item                  Category            Amount
+------------------------------------------------------------
+2026-11-10  A4 Paper              Stationery         1850.00
+2026-11-11  WiFi Bill             Internet           4500.50
+2026-11-14  Tea & Biscuits        Refreshments        700.00
+2026-11-12  Paper Ream            Stationery          950.00
+
+Unique categories: Internet, Refreshments, Stationery
+```
+
+**Attendance cleaner**
+```
+Original number of records : 10
+(Blank lines skipped       : 1)
+Unique students            : 5
+
+Cleaned attendance list:
+  1. Ahmed
+  2. Ali Raza
+  3. Bilal Ahmed
+  4. Sara Khan
+  5. Zainab Fatima
+
+Saved to attendance_clean.csv
+```
+
+`attendance_clean.csv`:
+```
+name
+Ahmed
+Ali Raza
+Bilal Ahmed
+Sara Khan
+Zainab Fatima
+```
+
+---
+
+## 8. Test cases
+
+All test cases below were run and **passed (27/27)**. To repeat them manually, run the program and enter the input shown.
+
+### Expense Tracker
+
+| ID | Test | Input / Action | Expected result | Result |
+|----|------|----------------|-----------------|:------:|
+| E1 | No file on first run | Delete `expenses.csv`, run program | "Starting with an empty expense list" (`FileNotFoundError` handled) | ✅ |
+| E2 | Show all when empty | Option 2 | "No expenses recorded yet" | ✅ |
+| E3 | Totals when empty | Option 3 | "No expenses recorded yet" | ✅ |
+| E4 | Invalid amount | Amount = `abc` | "Invalid amount", asked again; `1850` then accepted | ✅ |
+| E5 | Empty amount | Amount = (just Enter) | "Invalid amount", asked again | ✅ |
+| E6 | Negative amount | Amount = `-5` | "Amount cannot be negative", asked again | ✅ |
+| E7 | Invalid date | Date = `2026-13-45` | "Invalid date", asked again | ✅ |
+| E8 | Blank date | Date = (just Enter) | Today's date is saved | ✅ |
+| E9 | CSV header | Open `expenses.csv` | First line is `date,item,category,amount` | ✅ |
+| E10 | Expense saved to CSV | Add `WiFi Bill`, `internet`, `4500.50` | Row `2026-11-11,WiFi Bill,Internet,4500.5` in file | ✅ |
+| E11 | Data loaded again | Exit, run again | "Loaded 3 expense(s) from expenses.csv" | ✅ |
+| E12 | Loaded data shown | Option 2 after restart | Old expenses are listed | ✅ |
+| E13 | Unique categories (set) | Add `stationery` and `STATIONERY` | Category appears once: `Internet, Stationery` | ✅ |
+| E14 | Category total | Stationery 1850 + 20 + 950 | `2820.00` | ✅ |
+| E15 | Grand total | Option 3 | `7320.50` | ✅ |
+| E16 | Invalid menu choice | Enter `9` or `abc` | "Invalid choice", menu shown again | ✅ |
+| E17 | Exit | Option 4 | "Goodbye!" and program ends | ✅ |
+| E18 | Damaged CSV row | Row with amount `xyz` in CSV | Row skipped, valid rows still loaded | ✅ |
+
+### Attendance Cleaner
+
+| ID | Test | Input / Action | Expected result | Result |
+|----|------|----------------|-----------------|:------:|
+| A1 | Original record count | Provided `attendance.txt` | `Original number of records : 10` | ✅ |
+| A2 | Unique count (set) | Same file | `Unique students : 5` | ✅ |
+| A3 | Cleaned list shown | Same file | Numbered, alphabetical list printed | ✅ |
+| A4 | CSV sorted | Open `attendance_clean.csv` | `Ahmed, Ali Raza, Bilal Ahmed, Sara Khan, Zainab Fatima` | ✅ |
+| A5 | Blank line | File contains an empty line | Skipped and reported | ✅ |
+| A6 | strip + title + dedupe | `"  zed  "`, `"ZED"`, `"  amy lee"` | `Amy Lee`, `Zed` | ✅ |
+| A7 | Empty file | `attendance.txt` is empty | `Unique students : 0`, no crash | ✅ |
+| A8 | Missing file | Delete `attendance.txt` | "attendance.txt not found" (`FileNotFoundError` handled) | ✅ |
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="400" viewBox="0 0 1000 400" role="img" aria-label="Sets and list comprehension pipeline" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Sets and list comprehension pipeline</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="1000" height="400" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<text xml:space="preserve" x="500" y="32" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#1e293b" text-anchor="middle">Cleaning Pipeline: List Comprehension → Set → Sorted</text>
+<rect x="25" y="70" width="200" height="220" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="125" y="96" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">1. Raw lines</text>
+<text xml:space="preserve" x="125" y="128" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"  ali raza"</text>
+<text xml:space="preserve" x="125" y="153" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"SARA khan"</text>
+<text xml:space="preserve" x="125" y="178" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"ali raza  "</text>
+<text xml:space="preserve" x="125" y="203" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"  Ahmed   "</text>
+<text xml:space="preserve" x="125" y="228" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"sara KHAN"</text>
+<text xml:space="preserve" x="125" y="253" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ahmed"</text>
+<rect x="275" y="70" width="200" height="220" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="375" y="96" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">2. List comprehension</text>
+<text xml:space="preserve" x="375" y="128" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ali Raza"</text>
+<text xml:space="preserve" x="375" y="153" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Sara Khan"</text>
+<text xml:space="preserve" x="375" y="178" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ali Raza"</text>
+<text xml:space="preserve" x="375" y="203" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ahmed"</text>
+<text xml:space="preserve" x="375" y="228" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Sara Khan"</text>
+<text xml:space="preserve" x="375" y="253" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ahmed"</text>
+<rect x="525" y="70" width="200" height="220" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+<text xml:space="preserve" x="625" y="96" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">3. set()  (unordered)</text>
+<text xml:space="preserve" x="625" y="128" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ali Raza"</text>
+<text xml:space="preserve" x="625" y="153" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Sara Khan"</text>
+<text xml:space="preserve" x="625" y="178" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ahmed"</text>
+<text xml:space="preserve" x="625" y="203" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle"></text>
+<text xml:space="preserve" x="625" y="228" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">unique = 3</text>
+<rect x="775" y="70" width="200" height="220" rx="12" fill="#ffedd5" stroke="#ea580c" stroke-width="1.8"/>
+<text xml:space="preserve" x="875" y="96" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">4. sorted()</text>
+<text xml:space="preserve" x="875" y="128" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ahmed"</text>
+<text xml:space="preserve" x="875" y="153" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Ali Raza"</text>
+<text xml:space="preserve" x="875" y="178" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">"Sara Khan"</text>
+<text xml:space="preserve" x="875" y="203" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle"></text>
+<text xml:space="preserve" x="875" y="228" font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">→ attendance_clean.csv</text>
+<path d="M228,180 L272,180" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<path d="M478,180 L522,180" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<path d="M728,180 L772,180" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="250" y="166" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="1" font-weight="normal" fill="#1e293b" text-anchor="middle"></text>
+<rect x="40" y="316" width="920" height="64" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-dasharray="5 4"/>
+<text xml:space="preserve" x="500" y="340" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">[line.strip().title() for line in lines if line.strip()]</text>
+<text xml:space="preserve" x="500" y="364" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle">strip() removes extra spaces · title() fixes capitalisation · set() removes duplicates · sorted() orders A→Z</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo0MmM3NmIzZi03YjY2LTQ1MWItYmYxNi0wN2UxNmFjNDk1YWEAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaGBhy1WtMY8dUKf8US53KmMAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo1ZGRkMGNjYy0wZWY3LTQ0MjAtODJiNS1jM2YxODNjZDc4MjdscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo/VfgS6nXQI74Mcpc8FZBNAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggDVgMf/ppmb54p6G8j3tnuXjweLaGKx7c0v3rzFBVMhCkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaPYXFEoP3wwEMAeb7Ysp9AgAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIMIVUwkTJSJU4MfXxzLPmOGKPooz1YNCf86bX+l7uyHnZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GRxMZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjQyYzc2YjNmLTdiNjYtNDUxYi1iZjE2LTA3ZTE2YWM0OTVhYS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjY2ZjA1MjZjLTE1MjMtNGRkMi04NDhhLTUyODE5N2YyMmFlOXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCANWAx/+mmZvninobyPe2e5ePB4toYrHtzS/evMUFUyEKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggL0oWxdAXeDiZ8Ph2+OSqHiRni3aJB7kYJDB55goDNUCiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggBR+9IQONGuecRvg3WozzM1tzW5P0RFOHzd8/LTG1K510Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQHDcsoozZAnjJXa6/gJSNVRREOP8zd15SwpltYWM10xOtZ542Ak2IpLIa+DTcRr5ny124h3/eDrHtc0rDgLdDEw=</c2pa:manifest></metadata></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-label="Project structure and data flow" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Project structure and data flow</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="900" height="470" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<text xml:space="preserve" x="450" y="34" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#1e293b" text-anchor="middle">Project Structure &amp; Data Flow</text>
+<rect x="30" y="56" width="840" height="388" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="7 5"/>
+<text xml:space="preserve" x="48" y="80" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#334155" text-anchor="start">python-files-errors-assessment/</text>
+<rect x="325.0" y="98.0" width="250" height="40" rx="10" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="450" y="114.35" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#1e293b" text-anchor="middle">User (menu input)</text>
+<text xml:space="preserve" x="450" y="129.35" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#1e293b" text-anchor="middle">1 Add · 2 Show · 3 Totals · 4 Exit</text>
+<path d="M325,118 L150,118 L150,138" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="235" y="110" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">input</text>
+<rect x="45.0" y="148.0" width="210" height="64" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="150" y="176.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">expense_tracker.py</text>
+<text xml:space="preserve" x="150" y="193.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">Task 1 – Expense Tracker</text>
+<rect x="445.0" y="148.0" width="230" height="64" rx="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.8"/>
+<text xml:space="preserve" x="560" y="176.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">expenses.csv</text>
+<text xml:space="preserve" x="560" y="193.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">date,item,category,amount</text>
+<path d="M255,166 L445,166" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="350" y="158" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">save</text>
+<path d="M445,194 L255,194" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="350" y="212" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">load on start</text>
+<rect x="730.0" y="160.0" width="120" height="40" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+<text xml:space="preserve" x="790" y="176.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">README.md</text>
+<text xml:space="preserve" x="790" y="192.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">docs</text>
+<rect x="45.0" y="298.0" width="210" height="64" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="150" y="326.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">attendance_cleaner.py</text>
+<text xml:space="preserve" x="150" y="343.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">Task 2 – Attendance Cleaner</text>
+<rect x="345.0" y="298.0" width="210" height="64" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="450" y="326.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">attendance.txt</text>
+<text xml:space="preserve" x="450" y="343.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">raw names (input)</text>
+<rect x="645.0" y="298.0" width="210" height="64" rx="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.8"/>
+<text xml:space="preserve" x="750" y="326.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">attendance_clean.csv</text>
+<text xml:space="preserve" x="750" y="343.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">sorted unique names</text>
+<path d="M345,330 L255,330" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="300" y="322" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">read</text>
+<path d="M150,362 L150,402 L750,402 L750,362" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="450" y="396" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">write</text>
+<rect x="60" y="420" width="16" height="16" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text xml:space="preserve" x="84" y="433" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Python program</text>
+<rect x="225" y="420" width="16" height="16" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text xml:space="preserve" x="249" y="433" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Input file</text>
+<rect x="390" y="420" width="16" height="16" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+<text xml:space="preserve" x="414" y="433" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Generated file</text>
+<rect x="555" y="420" width="16" height="16" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+<text xml:space="preserve" x="579" y="433" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">User / interface</text>
+<rect x="720" y="420" width="16" height="16" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text xml:space="preserve" x="744" y="433" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Docs</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToxYTM4OWJlNS1mYzQ3LTQ5YTMtYWE1OC1iMjJjZmU0NmI1MmUAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaAlx7KN9D+I35QnVevGatAsAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDoxNWQ2NDE0Mi1lMGM0LTRmMDItOTM1MC00YzAwNGRlMGU2NDBscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoBb1PirVM5yrdqBmeM1852gAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggd5ZJvlP3q3kGVULIVW+akA7If9FCGL239rWgdRuEscqkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaLY1vVHu3t6Ulor8EsG8qMwAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYICtQFrbJQ1CfmZGRbmyqtrJEPtdoqxWgITkYXkIQKSn0ZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GR6mZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjFhMzg5YmU1LWZjNDctNDlhMy1hYTU4LWIyMmNmZTQ2YjUyZS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjMyZjQxYWVjLTQxNTEtNDEyNy04ZGJiLWQyMzUwN2FlNTE4M3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCB3lkm+U/ereQZVQshVb5qQDsh/0UIYvbf2taB1G4SxyqJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggY4U111cgw9m8Z0EBb5Z2nThM/djYIIzy2WZ4BIv/xoWiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggWzMfV2JxbVGyJBLmwcca7fbr+dOy3l94AkGZnFP4ZqV0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQHUXIRaHWyDH9GY1IXKfeAw7aMef77z0PJTKnp48bMsyVSv5stjAEzQGiFGaGYg7+qnaYnBO4QG8QjhBIIdvz3E=</c2pa:manifest></metadata></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="880" viewBox="0 0 820 880" role="img" aria-label="Attendance cleaner flowchart" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Attendance cleaner flowchart</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="820" height="880" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<text xml:space="preserve" x="410" y="32" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#1e293b" text-anchor="middle">Attendance Cleaner – Flowchart</text>
+<rect x="270.0" y="58.0" width="120" height="36" rx="18.0" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="80.9" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">START</text>
+<path d="M330,94 L330,118" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="180.0" y="118.0" width="300" height="48" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="138.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">Open attendance.txt</text>
+<text xml:space="preserve" x="330" y="155.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">inside try / except</text>
+<path d="M330,166 L330,200" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<polygon points="330,200.0 440.0,240 330,280.0 220.0,240" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="244.55" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">File found?</text>
+<rect x="550.0" y="205.0" width="200" height="70" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="1.8"/>
+<text xml:space="preserve" x="650" y="236.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">NO → FileNotFoundError</text>
+<text xml:space="preserve" x="650" y="252.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">print clear message</text>
+<path d="M440,240 L550,240" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="495" y="232" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">No</text>
+<rect x="590.0" y="322.0" width="120" height="36" rx="18.0" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="650" y="344.9" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">END</text>
+<path d="M650,275 L650,322" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<path d="M330,280 L330,322" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="350" y="306" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="start">Yes</text>
+<rect x="180.0" y="326.0" width="300" height="48" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="346.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">lines = f.readlines()</text>
+<text xml:space="preserve" x="330" y="363.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">one name per line</text>
+<path d="M330,374 L330,410" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="120.0" y="416.0" width="420" height="64" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="436.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">List comprehension</text>
+<text xml:space="preserve" x="330" y="452.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">cleaned = [line.strip().title()</text>
+<text xml:space="preserve" x="330" y="468.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">for line in lines if line.strip()]</text>
+<path d="M330,480 L330,518" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="160.0" y="520.0" width="340" height="56" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="544.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">unique_students = set(cleaned)</text>
+<text xml:space="preserve" x="330" y="560.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">duplicates removed</text>
+<path d="M330,576 L330,614" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="160.0" y="616.0" width="340" height="52" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="638.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">sorted_students = sorted(unique_students)</text>
+<text xml:space="preserve" x="330" y="654.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">alphabetical order</text>
+<path d="M330,668 L330,706" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="160.0" y="708.0" width="340" height="48" rx="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="728.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Write attendance_clean.csv</text>
+<text xml:space="preserve" x="330" y="744.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">header: name</text>
+<path d="M330,756 L330,780" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="120.0" y="786.0" width="420" height="44" rx="10" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="330" y="804.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Print original count, unique count,</text>
+<text xml:space="preserve" x="330" y="820.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">and the cleaned attendance list</text>
+<path d="M540,808 L650,808" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="650.0" y="791.0" width="100" height="34" rx="17.0" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="700" y="812.9" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">END</text>
+<rect x="560" y="440" width="230" height="150" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-dasharray="5 4"/>
+<text xml:space="preserve" x="675" y="464" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">Example</text>
+<text xml:space="preserve" x="575" y="490" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="normal" fill="#334155" text-anchor="start">"  ali raza "  →  "Ali Raza"</text>
+<text xml:space="preserve" x="575" y="510" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="normal" fill="#334155" text-anchor="start">"SARA khan"    →  "Sara Khan"</text>
+<text xml:space="preserve" x="575" y="530" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="normal" fill="#334155" text-anchor="start">"ali RAZA"       →  "Ali Raza"</text>
+<text xml:space="preserve" x="575" y="550" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="normal" fill="#334155" text-anchor="start"></text>
+<text xml:space="preserve" x="575" y="570" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="normal" fill="#334155" text-anchor="start">set → 2 unique names</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTphOWQ0NjIyZC0yNjc4LTQyY2QtOWRhZC1iMGVmYTlhY2IwMDYAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaG0rExAzSpCbqhLXTroQ0n4AAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo1MDg0MTY3ZS1iMWE4LTQ4N2UtOGIyNi0zOWM0ZDM0MjM5MjRscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoBqeOIPJj8a8LhT/ZNFcoJAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggNOX/374tu7Pp5fR6DGmgC66T+2ZqOAgeVC49vlA78FekZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaIuXsZ73x4e86xwCLDa6YLAAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIJxtxS7KSGpgey3Lr12KO1QNN1VL1Tu5H2ENxKKS0ghcZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GSRuZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmE5ZDQ2MjJkLTI2NzgtNDJjZC05ZGFkLWIwZWZhOWFjYjAwNi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmNkM2Q2MGU1LWRkMjMtNDgzOS04ZjdkLTNlNTA4MDBkMGQ5ZnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCA05f/fvi27s+nl9HoMaaALrpP7Zmo4CB5ULj2+UDvwV6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg47nwlQJrNqMh10j0qrjYqpa2BgtxVDAsFG75URwyaWiiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggxpS4tGq17N19LZQAqVHcXy9pjOTf8M2Inzt3nZLLaJt0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQO+qP95xdtIdPQDlDEQawgUWeDDq3kHJrWXKWw83UzEU7Z2n1tnMeXeskEgseZYrEGhq1mKqVL6ZPeOj6VmCTLo=</c2pa:manifest></metadata></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="210" viewBox="0 0 900 210" role="img" aria-label="Python Files &amp; Errors Assessment banner" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Python Files &amp; Errors Assessment banner</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="900" height="210" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<rect width="900" height="210" rx="14" fill="url(#hg)"/>
+<text xml:space="preserve" x="450" y="62" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="34" font-weight="bold" fill="#ffffff" text-anchor="middle">Python Files &amp; Errors Assessment</text>
+<text xml:space="preserve" x="450" y="95" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="normal" fill="#e0e7ff" text-anchor="middle">Institute Expense Tracker  +  Student Attendance Cleaner</text>
+<rect x="40" y="118" width="390" height="70" rx="12" fill="#ffffff" fill-opacity="0.95"/>
+<text xml:space="preserve" x="235" y="141" font-family="Consolas, 'Courier New', monospace" font-size="15" font-weight="bold" fill="#1e3a8a" text-anchor="middle">expense_tracker.py</text>
+<text xml:space="preserve" x="70" y="162" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• CSV save / load</text>
+<text xml:space="preserve" x="240" y="162" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• FileNotFoundError</text>
+<text xml:space="preserve" x="70" y="180" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• ValueError</text>
+<text xml:space="preserve" x="240" y="180" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• set of categories</text>
+<rect x="470" y="118" width="390" height="70" rx="12" fill="#ffffff" fill-opacity="0.95"/>
+<text xml:space="preserve" x="665" y="141" font-family="Consolas, 'Courier New', monospace" font-size="15" font-weight="bold" fill="#1e3a8a" text-anchor="middle">attendance_cleaner.py</text>
+<text xml:space="preserve" x="500" y="162" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• strip() + title()</text>
+<text xml:space="preserve" x="670" y="162" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• list comprehension</text>
+<text xml:space="preserve" x="500" y="180" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• set of students</text>
+<text xml:space="preserve" x="670" y="180" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">• sorted CSV output</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTozMmIwMmNjNS1hZmM0LTQzYTgtYjVmMC1jNWE5ODJmODRmMTgAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaOKKYZUNanLMv09UuYrlITQAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo0MmQxNjVkOS04MTAzLTQxNmQtYTg5NC1kMTBhZDhmNjY5NzlscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo2y13TSRMv5Xw6StIgtzCwAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgg8hY2ZHKp4KHHq4MOmFKMIgShrslWMgRwtl2wZPjQcwCkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaOkn1/B84pgzIWJ6UZRTZ5gAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIMVo4CIX4UhmQVzxmQEZnbEMG9ym7B1N53QKJ0H2vu2KZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GQ1CZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjMyYjAyY2M1LWFmYzQtNDNhOC1iNWYwLWM1YTk4MmY4NGYxOC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmUyM2ZhNjBmLTg3MjQtNDcxMC04MjY1LTUyMjUzMDQ4NDJjMHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDyFjZkcqngocergw6YUowiBKGuyVYyBHC2XbBk+NBzAKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggoYSbp0PdyLgoTmmieTr+okAiQVfQg2ggvANEmq2ikuGiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggd8dEVMhFz6lBoHtcfSyut1LXsD1Hs1RBU4vdMcSnBdN0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQAySux3tbafECq2f06OuG98aZaZRRbHztH+RufLibrPmqd3RFEC9NEs6utbrGb13l/Pu/wGNKrW8NihF+e9W9ms=</c2pa:manifest></metadata></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="960" viewBox="0 0 980 960" role="img" aria-label="Expense tracker flowchart" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Expense tracker flowchart</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="980" height="960" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<text xml:space="preserve" x="490" y="32" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#1e293b" text-anchor="middle">Expense Tracker – Flowchart</text>
+<rect x="430.0" y="58.0" width="120" height="36" rx="18.0" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="490" y="80.9" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">START</text>
+<path d="M490,94 L490,118" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="350.0" y="118.0" width="280" height="44" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="490" y="136.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">Run load_expenses()</text>
+<text xml:space="preserve" x="490" y="153.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#1e293b" text-anchor="middle">open expenses.csv</text>
+<path d="M490,162 L490,196" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<polygon points="490,196.0 600.0,236 490,276.0 380.0,236" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+<text xml:space="preserve" x="490" y="232.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">expenses.csv</text>
+<text xml:space="preserve" x="490" y="249.05" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">exists?</text>
+<rect x="65.0" y="295.0" width="250" height="70" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="1.8"/>
+<text xml:space="preserve" x="190" y="326.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">NO → catch FileNotFoundError</text>
+<text xml:space="preserve" x="190" y="342.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">start with empty list</text>
+<rect x="665.0" y="295.0" width="250" height="70" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="790" y="326.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">YES → read each row</text>
+<text xml:space="preserve" x="790" y="342.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">convert amount to float</text>
+<path d="M380,236 L190,236 L190,295" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="285" y="228" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">No</text>
+<path d="M600,236 L790,236 L790,295" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="695" y="228" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">Yes</text>
+<path d="M190,365 L190,380 L490,380 L490,398" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<path d="M790,365 L790,380 L490,380" fill="none" stroke="#475569" stroke-width="1.8"/>
+<rect x="350.0" y="398.0" width="280" height="44" rx="10" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="490" y="416.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Display menu</text>
+<text xml:space="preserve" x="490" y="432.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">1 Add · 2 Show · 3 Totals · 4 Exit</text>
+<path d="M490,442 L490,470" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<polygon points="490,470.0 590.0,515 490,560.0 390.0,515" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+<text xml:space="preserve" x="490" y="519.55" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">User choice?</text>
+<path d="M490,560 L490,585 L140,585 M490,585 L850,585" fill="none" stroke="#475569" stroke-width="1.8"/>
+<path d="M140,585 L140,612" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="152" y="603" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#64748b" text-anchor="start">1</text>
+<path d="M370,585 L370,612" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="382" y="603" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#64748b" text-anchor="start">2</text>
+<path d="M620,585 L620,612" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="632" y="603" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#64748b" text-anchor="start">3</text>
+<path d="M850,585 L850,612" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="862" y="603" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#64748b" text-anchor="start">4</text>
+<rect x="45.0" y="612.0" width="190" height="76" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+<text xml:space="preserve" x="140" y="638.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Add New Expense</text>
+<text xml:space="preserve" x="140" y="654.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">enter date, item,</text>
+<text xml:space="preserve" x="140" y="670.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">category, amount</text>
+<rect x="275.0" y="612.0" width="190" height="76" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text xml:space="preserve" x="370" y="638.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Show All Expenses</text>
+<text xml:space="preserve" x="370" y="654.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">print table +</text>
+<text xml:space="preserve" x="370" y="670.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">unique categories (set)</text>
+<rect x="525.0" y="612.0" width="190" height="76" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+<text xml:space="preserve" x="620" y="638.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Totals by Category</text>
+<text xml:space="preserve" x="620" y="654.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">set of categories →</text>
+<text xml:space="preserve" x="620" y="670.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">sum per category</text>
+<rect x="755.0" y="612.0" width="190" height="76" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="1.8"/>
+<text xml:space="preserve" x="850" y="646.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">Exit</text>
+<text xml:space="preserve" x="850" y="662.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e293b" text-anchor="middle">print Goodbye</text>
+<path d="M140,688 L140,722" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="45.0" y="724.0" width="190" height="56" rx="10" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+<text xml:space="preserve" x="140" y="748.35" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#1e293b" text-anchor="middle">amount a number?</text>
+<text xml:space="preserve" x="140" y="763.35" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#1e293b" text-anchor="middle">else ValueError → ask again</text>
+<path d="M235,752 L255,752 L255,650 L235,650" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<text x="248" y="701" font-size="11" font-weight="bold" fill="#64748b" text-anchor="middle" transform="rotate(-90 248 701)" font-family="Segoe UI, Arial, sans-serif">retry</text>
+<path d="M140,780 L140,812" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<text xml:space="preserve" x="158" y="800" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="start">valid</text>
+<rect x="45.0" y="816.0" width="190" height="40" rx="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.8"/>
+<text xml:space="preserve" x="140" y="840.2" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">Save to expenses.csv</text>
+<path d="M850,688 L850,760" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ar)"/>
+<rect x="790.0" y="762.0" width="120" height="36" rx="18.0" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+<text xml:space="preserve" x="850" y="784.9" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b" text-anchor="middle">END</text>
+<path d="M140,856 L140,930 L24,930 L24,420 L350,420" fill="none" stroke="#475569" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<path d="M370,688 L370,930 L140,930" fill="none" stroke="#475569" stroke-width="1.8" stroke-dasharray="6 4"/>
+<path d="M620,688 L620,930 L370,930" fill="none" stroke="#475569" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text xml:space="preserve" x="500" y="950" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">back to menu (options 1, 2, 3 repeat until user chooses 4)</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTpjNTU0MWJlOS1kNTljLTQ3YzItYWEzZS0wZTAyMGI5ZGViNDkAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaEEtkPj/u/ytCkkmqMxDcIMAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDowZjU5MDZlMi04NWYyLTQ2N2MtYTI2NC1mZTA2MzYxOGI5NThscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNopTMvgVJx8/7KDn2BavVCTAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggpI3D48p16QoFWSjpc/FAPR0bchy7YTpW1/5Z1KI7TdGkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaHVpdVbsN1VtVwLAAEz+KhQAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIBqzArx1c2y/XXuAipMclyLKb2UomI+vkE4YKoIBlN8GZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GS2rZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmM1NTQxYmU5LWQ1OWMtNDdjMi1hYTNlLTBlMDIwYjlkZWI0OS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmQ0ZWM5OTcyLWYzNDEtNDgyOS05ZDUwLWRhMGYzMTUzMjUxZHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCkjcPjynXpCgVZKOlz8UA9HRtyHLthOlbX/lnUojtN0aJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggc8NLFzm0/SYwobQD0sCmSs0YCQNg6O52e2MqFISXAwaiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggEN4DXZR+8YPpHBpmkZZS2GylOp1ZPQ+um5JTZA/NPD50Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQNDBMSXwqjmOr6amswwkAgaoKs5mT8HRYht5l82cFcWl16yZk4D41l9ROJSG6zrcvPjY2kjVDCGc0/lNEb6/fLA=</c2pa:manifest></metadata></svg>
