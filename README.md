@@ -1,6 +1,20 @@
+<p align="center">
+  <img src="images/banner.svg" alt="Python Files & Errors Assessment banner" width="100%">
+</p>
+
+<p align="center">
+  <img src="images/stats.svg" alt="Python 3.8+, no dependencies, 27/27 tests passed, 2 programs, 5 SVG diagrams" width="100%">
+</p>
+
 # Python Files & Errors Assessment
 
 Two small management tools for a training institute, built with Python's **file handling**, **exception handling**, **sets** and **list comprehensions**. Only the standard library is used (Python 3.8+).
+
+> **Quick start:** `python expense_tracker.py` then `python attendance_cleaner.py`. No installs needed.
+
+<!--toc-->
+**Jump to:** [Overview](#1-overview) · [Structure](#2-project-structure) · [Checklist](#3-requirements-checklist) · [How to run](#4-how-to-run) · [Errors](#5-errors-handled-and-why) · [Sets & comprehensions](#6-how-sets-and-list-comprehensions-are-used) · [Sample run](#7-sample-run-data-saved-and-loaded-again) · [Tests](#8-test-cases)
+<!--/toc-->
 
 ---
 
@@ -18,10 +32,13 @@ python-files-errors-assessment/
 ├── expense_tracker.py
 ├── attendance_cleaner.py
 ├── attendance.txt
-└── README.md
+├── README.md
+└── images/            <- SVG diagrams used in this README
 ```
 
 `expenses.csv` and `attendance_clean.csv` are created automatically when the programs run.
+
+![Project structure and data flow](images/structure.svg)
 
 ---
 
@@ -61,6 +78,7 @@ python-files-errors-assessment/
 | **README: how sets and list comprehensions are used** | ✅ Section 6 |
 | **README: sample run showing data saved and loaded again** | ✅ Section 7 |
 | **Test cases** | ✅ Section 8 |
+| **SVG banner, stats strip, structure diagram and flowcharts** | ✅ Top, Sections 2, 4 and 6 |
 
 ---
 
@@ -83,8 +101,16 @@ python attendance_cleaner.py
 
 Every new expense is written to `expenses.csv` immediately, and the file is loaded again the next time the program starts.
 
+#### Expense Tracker flowchart
+
+![Expense tracker flowchart](images/expense_flowchart.svg)
+
 ### Attendance Cleaner
 Reads `attendance.txt`, cleans it, prints the **original number of records**, the **unique student count** and the **cleaned list**, and saves the sorted unique names to `attendance_clean.csv`. No input is needed.
+
+#### Attendance Cleaner flowchart
+
+![Attendance cleaner flowchart](images/attendance_flowchart.svg)
 
 ---
 
@@ -103,6 +129,8 @@ Extra input checks: negative amounts, empty item/category and invalid menu choic
 ---
 
 ## 6. How sets and list comprehensions are used
+
+![Cleaning pipeline: list comprehension, set, sorted](images/sets_and_comprehension.svg)
 
 ### Sets (store only unique values)
 - `expense_tracker.py`: `{e["category"] for e in expenses}` gives **each category once**, even if it was used many times. It is used to display the unique categories and to calculate totals.
